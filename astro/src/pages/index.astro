@@ -11,14 +11,85 @@ import Contact from "../components/Contact.astro";
 import Footer from "../components/Footer.astro";
 ---
 
-<Layout title="Your Name — Portfolio">
-  <Nav />
-  <Hero />
-  <About />
-  <Projects />
-  <Experience />
-  <Skills />
-  <Testimonials />
-  <Contact />
-  <Footer />
+<Layout title="Sean Wallace — Portfolio">
+  <div id="background-render" class="fixed top-0 left-0 w-full h-full z-[-1]"></div>
+  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5]">
+    <div id="loading-bar-container" class="flex flex-col w-md h-md justify-center">
+      loading
+      <div id="loading-bar-fill" class="rounded-xl h-6 w-[0%] content-center transition-[width] duration-500 ease-in bg-taupe-200">
+      </div>
+    </div>
+  </div>
+  <!-- <Nav /> -->
+  <div id="page-content" class="invisible">
+    
+    <section id="Name">
+    </section>
+
+
+    <section>
+
+
+    
+
+
+    <Hero />
+    <About />
+    <Projects />
+    <Experience />
+    <Skills />
+    <Testimonials />
+    <Contact />
+    <Footer />
+  </div>
+  
+  
 </Layout>
+
+
+<script>
+  import { number, set } from "astro:schema";
+  import { HeroScene } from "../scripts/heroScene";
+
+  const container = document.getElementById("background-render");
+
+  const totalAnimationFrames = 320
+
+  const loadingPage = document.getElementById('loading-page') as HTMLElement;
+  const loadingBar = document.getElementById('loading-bar-fill') as HTMLElement;
+  const pageContent = document.getElementById('page-content') as HTMLElement;
+
+  function setPercent(percent: number|null){
+    if(percent !== null){
+      loadingBar.style.width = `${percent}%`
+    }
+  }
+
+  function setAnimationFrameFromScrollHeight(scene:HeroScene){
+    let height_to_lastFrame = window.visualViewport?.height ? document.body.clientHeight - window.visualViewport?.height : document.body.clientHeight
+    const scrollypercent = (window.scrollY / height_to_lastFrame);
+
+    scene.setanimateframe(scrollypercent*totalAnimationFrames)
+  }
+
+  if (container) {
+
+    
+    const scene = new HeroScene(container,setPercent,
+      ()=>{
+        scene.startrender();
+        setAnimationFrameFromScrollHeight(scene)
+        loadingPage.classList.add("hidden")
+        pageContent.classList.remove("invisible")
+      });
+
+    window.addEventListener("scroll", ()=>{
+      setAnimationFrameFromScrollHeight(scene)
+    })
+
+    window.addEventListener("beforeunload", () => scene.dispose());
+  }
+
+  
+
+</script>

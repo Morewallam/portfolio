@@ -2,43 +2,24 @@
 import { site } from "../data/content";
 ---
 
-<section id="hero" class="relative flex min-h-[90vh] items-center overflow-hidden px-6">
-  <div id="hero-canvas" class="absolute inset-0 z-0 [@media(prefers-reduced-motion:reduce)]:hidden" aria-hidden="true"></div>
-  <div class="relative z-10 mx-auto max-w-2xl text-center">
-    <h1 class="text-3xl font-medium leading-tight sm:text-4xl md:text-5xl">{site.tagline}</h1>
-    <p class="mt-4 text-neutral-500">{site.subheading}</p>
-    <a
-      href="#work"
-      class="mt-6 inline-block rounded-md border border-neutral-900 px-6 py-2 text-sm hover:bg-neutral-900 hover:text-white transition-colors"
-    >
-      View work
-    </a>
+<section id="hero" class="relative flex min-h-[90vh] items-center overflow-hidden px-6 h-[100dvh]">
+  <div class="mx-auto max-w-2xl text-center">
+    <div class="flex gap-16 justify-center">
+      <h1 class="text-[4rem] font-bold w-lg">
+        Sean
+      </h1>
+      <h1 class="text-[4rem] font-bold w-lg">
+        Wallace
+      </h1>
+    </div>
+
+    <div id="scroll_down_message" class="absolute bot-10 mx-auto w-lg flex-col items-center">   
+      <div> Scroll for More</div>
+      <div> ↓ </div> 
+    </div>
   </div>
 </section>
 
-<script>
-  import { HeroScene } from "../scripts/heroScene";
 
-  const container = document.getElementById("hero-canvas");
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
 
-  if (container && !prefersReducedMotion) {
-    const scene = new HeroScene(container);
-    scene.start();
-
-    // Pause rendering when the hero scrolls out of view to save GPU/battery.
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        scene.start();
-      } else {
-        scene.stop();
-      }
-    });
-    observer.observe(container);
-
-    // Dispose on unload to avoid leaking WebGL contexts.
-    window.addEventListener("beforeunload", () => scene.dispose());
-  }
-</script>
+      
