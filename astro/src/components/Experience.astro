@@ -6,14 +6,19 @@ import { experience } from "../data/content";
   <h2 class="mb-4 text-xl font-medium">Experience</h2>
   <ol class="flex flex-col gap-6">
     {experience.map((item) => (
-      <li class="border-l-2 border-neutral-200 pl-4">
-        <div class="mb-1 flex flex-wrap gap-2 text-sm">
-          <strong>{item.role}</strong>
-          <span>{item.org}</span>
-          <span class="ml-auto text-neutral-400">{item.dates}</span>
-        </div>
-        <p class="m-0 text-sm text-neutral-500">{item.summary}</p>
-      </li>
+      <li class="flex-row items-center w-md sm:w-lg glass-box">
+      <div>
+        {item.dates}
+      </div>
+      <div>
+        <strong>{item.header}</strong>
+        <br/>
+        <strong>{item.subheader}</strong>
+        <br/>
+        <span>{item.description}</span>
+      </div>
+    </li>
     ))}
+
   </ol>
 </section>

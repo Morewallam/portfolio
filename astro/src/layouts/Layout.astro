@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { Font } from "astro:assets"
 
 interface Props {
   title: string;
@@ -12,6 +13,8 @@ const { title, description = "Personal portfolio and project showcase." } = Astr
 <!doctype html>
 <html lang="en">
   <head>
+    <Font cssVariable="--font-google-sans"/>
+    <Font cssVariable="--font-dela-gothic"/>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />

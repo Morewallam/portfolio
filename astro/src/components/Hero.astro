@@ -1,25 +1,66 @@
 ---
-import { site } from "../data/content";
+
 ---
 
-<section id="hero" class="relative flex min-h-[90vh] items-center overflow-hidden px-6 h-[100dvh]">
-  <div class="mx-auto max-w-2xl text-center">
-    <div class="flex gap-16 justify-center">
-      <h1 class="text-[4rem] font-bold w-lg">
-        Sean
-      </h1>
-      <h1 class="text-[4rem] font-bold w-lg">
-        Wallace
-      </h1>
+<section id="hero" class="relative overflow-hidden h-[100dvh]">
+  <div id="hero_bg" class="fixed top-0 inset-0"></div>
+  <div id="hero_sticky" class="sticky top-0 h-[100dvh] flex flex-col items-center justify-center px-6">
+    <div id="welcome_message" class="text-center rounded-xl">
+      <h1>Welcome</h1>
     </div>
 
-    <div id="scroll_down_message" class="absolute bot-10 mx-auto w-lg flex-col items-center">   
-      <div> Scroll for More</div>
-      <div> ↓ </div> 
+    <div id="scroll_down_message" class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center text-center rounded">
+      <div>Scroll for More</div>
+      <div>↓</div>
     </div>
   </div>
 </section>
 
+<style>
+  h1{
+    font-family: var(--font-dela-gothic);
+    font-size: clamp(3rem, 10vw, 16rem);
+  }
 
+  #hero_bg {
+    background-color: rgb(255 255 255 / 30%);
+    backdrop-filter: blur(var(--hero-blur, 12px));
+    -webkit-backdrop-filter: blur(var(--hero-blur, 12px));
+    transition: backdrop-filter 0.05s linear;
+    will-change: backdrop-filter;
+  }
+
+  #welcome_message, #scroll_down_message, #hero_bg {
+    opacity: var(--hero-opacity, 1);
+    transition: opacity 0.05s linear;
+    will-change: opacity;
+  }
+</style>
+
+<script>
+  const hero = document.getElementById('hero');
+  const heroBg = document.getElementById('hero_bg');
+  const heroContent = document.getElementById('welcome_message');
+  const scrollMsg = document.getElementById('scroll_down_message');
+
+  const MAX_BLUR = 12; // px, starting blur amount
+  const FADE_DISTANCE = 300; // px scrolled before fully faded — tweak to taste
+
+  function updateHero() {
+    const scrollY = window.scrollY;
+    const progress = Math.min(scrollY / FADE_DISTANCE, 1); // 0 -> 1
+
+    const blur = MAX_BLUR * (1 - progress);
+    const opacity = 1 - progress;
+
+    heroBg?.style.setProperty('--hero-blur', `${blur}px`);
+    heroBg?.style.setProperty('--hero-opacity', opacity.toString());
+    heroContent?.style.setProperty('--hero-opacity', opacity.toString());
+    scrollMsg?.style.setProperty('--hero-opacity', opacity.toString());
+  }
+
+  window.addEventListener('scroll', updateHero, { passive: true });
+  updateHero(); // set initial state
+</script>
 
       

@@ -1,19 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Nav from "../components/Nav.astro";
 import Hero from "../components/Hero.astro";
 import About from "../components/About.astro";
 import Projects from "../components/Projects.astro";
 import Experience from "../components/Experience.astro";
 import Skills from "../components/Skills.astro";
-import Testimonials from "../components/Testimonials.astro";
 import Contact from "../components/Contact.astro";
-import Footer from "../components/Footer.astro";
 ---
 
 <Layout title="Sean Wallace — Portfolio">
   <div id="background-render" class="fixed top-0 left-0 w-full h-full z-[-1]"></div>
-  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5]">
+  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5] hidden">
     <div id="loading-bar-container" class="flex flex-col w-md h-md justify-center">
       loading
       <div id="loading-bar-fill" class="rounded-xl h-6 w-[0%] content-center transition-[width] duration-500 ease-in bg-taupe-200">
@@ -21,29 +18,39 @@ import Footer from "../components/Footer.astro";
     </div>
   </div>
   <!-- <Nav /> -->
-  <div id="page-content" class="invisible">
+  <div id="page-content" class="">
     
-    <section id="Name">
-    </section>
-
-
-    <section>
-
-
-    
-
-
     <Hero />
-    <About />
-    <Projects />
-    <Experience />
-    <Skills />
-    <Testimonials />
+
+    <div id="animation-wrapper-door" class="h-[20vh]" >
+    </div>
+     
+    
+    
+    <div id="animation-wrapper-door-to-water" class="h-[90vh]">
+
+    </div>
+    <div id="animation-wrapper-water">
+      <About />
+      <Experience />
+    </div>
+    
+    <div id="animation-wrapper-water-to-tokonoma" class="h-[90vh]"></div>
+
+    <div id="animation-wrapper-tokonoma">
+      <Projects />
+      <Skills />
+    </div>
+    
+    <div id="animation-wrapper-tokonoma-to-table" class="h-[90vh]">
+    </div>
+
+    <div id="animation-wrapper-table">
     <Contact />
-    <Footer />
+     </div>
+  
   </div>
-  
-  
+
 </Layout>
 
 
@@ -55,6 +62,23 @@ import Footer from "../components/Footer.astro";
 
   const totalAnimationFrames = 320
 
+  const panInStartFrame = 48
+  const outsideDoorOpenStartFrame = 96
+  const panToTokomaStartFrame = 144
+  const outsideDoorCloseStartFrame = 192
+  const panToTableStartFrame = 240 
+  const panToTableEndFrame = 288
+
+  const aniWrapperDoor = document.getElementById('animation-wrapper-door')as HTMLElement;
+  const aniWrapperDoorToWater = document.getElementById('animation-wrapper-door-to-water')as HTMLElement;
+  const aniWrapperWater = document.getElementById('animation-wrapper-water')as HTMLElement;
+  const aniWrapperWaterToTokonoma = document.getElementById('animation-wrapper-water-to-tokonoma')as HTMLElement;
+  const aniWrapperTokonoma = document.getElementById('animation-wrapper-tokonoma')as HTMLElement;
+  const aniWrapperTokonomaToTable = document.getElementById('animation-wrapper-tokonoma-to-table')as HTMLElement;
+  const aniWrapperTable = document.getElementById('animation-wrapper-table')as HTMLElement;
+
+  
+
   const loadingPage = document.getElementById('loading-page') as HTMLElement;
   const loadingBar = document.getElementById('loading-bar-fill') as HTMLElement;
   const pageContent = document.getElementById('page-content') as HTMLElement;
@@ -65,28 +89,69 @@ import Footer from "../components/Footer.astro";
     }
   }
 
-  function setAnimationFrameFromScrollHeight(scene:HeroScene){
-    let height_to_lastFrame = window.visualViewport?.height ? document.body.clientHeight - window.visualViewport?.height : document.body.clientHeight
-    const scrollypercent = (window.scrollY / height_to_lastFrame);
+  type AnimationSegment = {
+    wrapper: HTMLElement;
+    startFrame: number;
+    endFrame: number;
+  };
 
-    scene.setanimateframe(scrollypercent*totalAnimationFrames)
+  // 0 -> 1 progress through a single wrapper's own scroll range.
+  // 0 when the wrapper's top just reaches the top of the viewport,
+  // 1 when the wrapper's bottom reaches the top of the viewport.
+  function getWrapperProgress(wrapper: HTMLElement): number {
+    const rect = wrapper.getBoundingClientRect();
+    const viewportHeight = window.innerHeight/2;
+
+    const amountmoved = viewportHeight - rect.top 
+    const percent = Math.min(amountmoved/rect.height,1)
+    return percent;
+  }
+
+  // Ordered oldest -> newest. Only wrappers that should actively drive
+  // the animation as you scroll through them belong here — content
+  // wrappers (About/Experience, Projects/Skills) are intentionally
+  // left out, so the scene just holds its frame while you read.
+  const segments: AnimationSegment[] = [
+    { wrapper: aniWrapperDoor,      startFrame: 0,   endFrame: panInStartFrame },
+    { wrapper: aniWrapperDoorToWater,      startFrame: panInStartFrame,   endFrame: panToTokomaStartFrame },
+    { wrapper: aniWrapperWater,      startFrame: panToTokomaStartFrame,   endFrame: panToTokomaStartFrame },
+    { wrapper: aniWrapperWaterToTokonoma,  startFrame: panToTokomaStartFrame,  endFrame: outsideDoorCloseStartFrame },
+    { wrapper: aniWrapperTokonoma,  startFrame: outsideDoorCloseStartFrame,  endFrame: panToTableStartFrame },
+    { wrapper: aniWrapperTokonomaToTable,  startFrame: panToTableStartFrame, endFrame: panToTableEndFrame },
+    { wrapper: aniWrapperTable,  startFrame: panToTableEndFrame, endFrame: totalAnimationFrames },
+  ];
+  
+  function computeFrame(): number {
+    for (let i = 0 ; i<segments.length; i++) {
+      const rect = segments[i].wrapper.getBoundingClientRect();
+      if (rect.top <= window.innerHeight/2 && rect.bottom > window.innerHeight/2) {
+        const progress = getWrapperProgress(segments[i].wrapper);
+        const { startFrame, endFrame } = segments[i];
+        return startFrame + progress * (endFrame - startFrame);
+      }
+    }
+    return segments[0].startFrame;
+  }
+
+  let framePending = false;
+  function onScroll(scene:HeroScene) {
+    if (framePending) return;
+    framePending = true;
+    requestAnimationFrame(() => {
+      framePending = false;
+      scene.setanimateframe(computeFrame());
+    });
   }
 
   if (container) {
+    const scene = new HeroScene(container, setPercent, () => {
+      scene.startrender();
+      scene.setanimateframe(computeFrame());
+      loadingPage.classList.add("hidden");
+      pageContent.classList.remove("invisible");
+    });
 
-    
-    const scene = new HeroScene(container,setPercent,
-      ()=>{
-        scene.startrender();
-        setAnimationFrameFromScrollHeight(scene)
-        loadingPage.classList.add("hidden")
-        pageContent.classList.remove("invisible")
-      });
-
-    window.addEventListener("scroll", ()=>{
-      setAnimationFrameFromScrollHeight(scene)
-    })
-
+    window.addEventListener("scroll", () => onScroll(scene), { passive: true });
     window.addEventListener("beforeunload", () => scene.dispose());
   }
 

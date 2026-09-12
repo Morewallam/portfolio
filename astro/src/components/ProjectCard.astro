@@ -8,7 +8,7 @@ interface Props {
 const { project } = Astro.props;
 ---
 
-<article class:list={["overflow-hidden rounded-xl border border-neutral-200", { "sm:col-span-2": project.featured }]}>
+<article class:list={["overflow-hidden rounded-xl border border-neutral-200 glass-box", { "sm:col-span-2": project.featured }]}>
   <img
     src={project.image}
     alt={`Screenshot of ${project.title}`}

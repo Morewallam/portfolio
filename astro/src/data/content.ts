@@ -1,71 +1,66 @@
-import type { Project, ExperienceItem, SkillGroup, Testimonial, SocialLink } from "./types";
+import type { Project, ExperienceItem, SkillGroup, SocialLink } from "./types";
 
-export const site = {
-  name: "Your Name",
-  tagline: "Frontend developer building fast, accessible web apps",
-  subheading: "I design and build performant interfaces, from prototype to production.",
-  email: "hello@yourname.dev",
+export const about = {
+  intro: "Hi, I'm Sean Wallace",
+  passage: "I glad you came to check out my website. I am a software developer that enjoys developing projects, playing games and learning japanese."
 };
 
 export const projects: Project[] = [
   {
-    title: "Project One",
-    description: "A short description of the problem, your approach, and the outcome.",
-    tech: ["React", "TypeScript", "Node"],
+    title: "Handmade By Claire",
+    description: "A website for beautiful handmade works of art",
+    tech: ["Astro", "TypeScript", "Sanity","Vercel"],
     image: "/images/project-one.jpg",
-    liveUrl: "https://example.com",
-    codeUrl: "https://github.com/yourname/project-one",
-    featured: true,
+    liveUrl: "https://www.handmadebyclaire.com/",
+    codeUrl: "https://github.com/Morewallam/HandmadebyClaire",
   },
   {
-    title: "Project Two",
-    description: "A short description of the problem, your approach, and the outcome.",
-    tech: ["Astro", "Three.js"],
+    title: "Plane Segmentation",
+    description: "Find planes from aerial images",
+    tech: ["Python", "Pytorch"],
     image: "/images/project-two.jpg",
-    liveUrl: "https://example.com",
-    codeUrl: "https://github.com/yourname/project-two",
+    codeUrl: "https://github.com/Morewallam/PlaneSegmentation",
   },
   {
-    title: "Project Three",
-    description: "A short description of the problem, your approach, and the outcome.",
-    tech: ["Vue", "Tailwind"],
+    title: "Emotion Defender",
+    description: "Use your expressions to hold off enemies",
+    tech: ["Python","Pygame", "TensorFlow"],
     image: "/images/project-three.jpg",
-    codeUrl: "https://github.com/yourname/project-three",
+    codeUrl: "https://github.com/Morewallam/EmotionDefender",
   },
 ];
 
 export const experience: ExperienceItem[] = [
   {
-    role: "Frontend Engineer",
-    org: "Company Name",
-    dates: "2023 — Present",
-    summary: "One or two lines on scope and impact in this role.",
+    dates: "2019-2021",
+    header:"British Columbia Institute of Technology",
+    subheader:"CST Program",
+    description:"Graduated from the Computer Systems Technoology Program at BCIT. Focusing on functional programming and web developemnt I learned about different ways of programming and how to worm with others to build real world projects."
   },
   {
-    role: "Web Developer",
-    org: "Previous Company",
-    dates: "2021 — 2023",
-    summary: "One or two lines on scope and impact in this role.",
+    dates: "2022 May-Dec",
+    header:"Fortinet",
+    subheader:"Web Developer Intern",
+    description:"I worked as a CO-OP for 8 months at Fortinet. I learned how to work in a real production envirnoment. This included working with git and managing pull requests and having to work with different teams to all come together to create something that is great for the customer. "
   },
+  {
+    dates: "2021-2024",
+    header:"Simon Fraser University",
+    subheader:"Computing Science, Math Minor",
+    description:"Graduated from SFU at the end of 2024, focusing on machine learning, computer graphics and mathematics."
+  }
 ];
 
 export const skills: SkillGroup[] = [
-  { category: "Languages", items: ["TypeScript", "JavaScript", "HTML", "CSS"] },
-  { category: "Frameworks", items: ["Astro", "React", "Vue"] },
-  { category: "Tools", items: ["Vite", "Git", "Figma"] },
-  { category: "3D / Graphics", items: ["Three.js", "WebGL", "GLSL"] },
+  { category: "Languages", items: ["Python", "TypeScript", "C++", "C","Node.js", ] },
+  { category: "Frameworks", items: ["Astro", "React", "Angular"] },
+  { category: "Machine Learning", items: ["Pytorch", "TensorFlow", "sckit-learn", "pandas", "apache-spark"] },
+  { category: "Tools", items: ["Git", "Figma", "Unity"] }
 ];
 
-export const testimonials: Testimonial[] = [
-  {
-    quote: "Great to work with — shipped on time, every time.",
-    name: "Jane Doe",
-    role: "Engineering Lead, Company",
-  },
-];
 
 export const socials: SocialLink[] = [
-  { label: "GitHub", url: "https://github.com/yourname", icon: "github" },
-  { label: "LinkedIn", url: "https://linkedin.com/in/yourname", icon: "linkedin" },
-  { label: "Email", url: "mailto:hello@yourname.dev", icon: "mail" },
+  { label: "GitHub", url: "https://github.com/morewallam", icon: "github" },
+  { label: "LinkedIn", url: "https://linkedin.com/in/seancwallace", icon: "linkedin" },
+  { label: "Email", url: "mailto:swallace987@gmail.com", icon: "mail" },
 ];

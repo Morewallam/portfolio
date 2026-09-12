@@ -1,9 +1,20 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
+  fonts:[{
+    provider: fontProviders.google(),
+    name: "Google Sans",
+    cssVariable: "--font-google-sans"
+  },
+  {
+    provider: fontProviders.google(),
+    name: "Dela Gothic One",
+    cssVariable: "--font-dela-gothic"
+  }
+  ],
   vite: {
     plugins: [tailwindcss()],
   },

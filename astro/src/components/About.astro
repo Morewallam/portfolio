@@ -1,18 +1,28 @@
 ---
-import { skills } from "../data/content";
 
-const tags = skills.flatMap((group) => group.items).slice(0, 6);
+import { about } from "../data/content";
 ---
 
 <section id="about" class="mx-auto max-w-[1100px] px-6 py-16">
-  <h2 class="mb-4 text-xl font-medium">About</h2>
+  <div class="glass-box">
+    <h1 class="text-xl font-bold">
+      {about.intro}
+    </h1>
+    <p>
+      {about.passage}
+    </p>
+  </div>
+  
+  <!-- <h2 class="mb-4 text-xl font-medium">About</h2>
   <p class="max-w-2xl text-neutral-600">
     Write two to four short paragraphs here: who you are, your background,
     and what drives you. Keep it personal, not just a resume in prose.
-  </p>
-  <ul class="mt-4 flex flex-wrap gap-2">
+  </p> -->
+  <!-- <ul class="mt-4 flex flex-wrap gap-2">
     {tags.map((tag) => (
       <li class="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">{tag}</li>
     ))}
-  </ul>
+  </ul> -->
 </section>
+
+
