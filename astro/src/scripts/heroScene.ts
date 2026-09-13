@@ -133,7 +133,7 @@ export class HeroScene {
     pmremGenerator.compileEquirectangularShader();
 
     const backgroundLoader = new THREE.TextureLoader();
-    const texture = backgroundLoader.load('/seaBackground.jpg', () => {
+    const texture = backgroundLoader.load('/images/seaBackground.jpg', () => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       texture.colorSpace = THREE.SRGBColorSpace;
 

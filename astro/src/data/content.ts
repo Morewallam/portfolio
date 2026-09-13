@@ -10,7 +10,7 @@ export const projects: Project[] = [
     title: "Handmade By Claire",
     description: "A website for beautiful handmade works of art",
     tech: ["Astro", "TypeScript", "Sanity","Vercel"],
-    image: "/images/project-one.jpg",
+    image: "/images/HandmadeByClaire.png",
     liveUrl: "https://www.handmadebyclaire.com/",
     codeUrl: "https://github.com/Morewallam/HandmadebyClaire",
   },
@@ -18,14 +18,14 @@ export const projects: Project[] = [
     title: "Plane Segmentation",
     description: "Find planes from aerial images",
     tech: ["Python", "Pytorch"],
-    image: "/images/project-two.jpg",
+    image: "/images/planeImage.jpg",
     codeUrl: "https://github.com/Morewallam/PlaneSegmentation",
   },
   {
     title: "Emotion Defender",
     description: "Use your expressions to hold off enemies",
     tech: ["Python","Pygame", "TensorFlow"],
-    image: "/images/project-three.jpg",
+    image: "/images/EmotionDefender.png",
     codeUrl: "https://github.com/Morewallam/EmotionDefender",
   },
 ];
@@ -60,7 +60,7 @@ export const skills: SkillGroup[] = [
 
 
 export const socials: SocialLink[] = [
-  { label: "GitHub", url: "https://github.com/morewallam", icon: "github" },
-  { label: "LinkedIn", url: "https://linkedin.com/in/seancwallace", icon: "linkedin" },
-  { label: "Email", url: "mailto:swallace987@gmail.com", icon: "mail" },
+  { label: "swallace987@gmail.com", url: "mailto:swallace987@gmail.com", icon: "envelope-solid-full" },
+  { label: "seancwallace30", url: "https://www.linkedin.com/in/seancwallace30", icon: "linkedin-brands-solid" },
+  { label: "Morewallam", url: "https://github.com/Morewallam", icon: "github-brands-solid" },
 ];

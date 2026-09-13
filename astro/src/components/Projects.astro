@@ -3,9 +3,18 @@ import { projects } from "../data/content";
 import ProjectCard from "./ProjectCard.astro";
 ---
 
-<section id="work" class="mx-auto max-w-[1100px] px-6 py-16">
-  <h2 class="mb-4 text-xl font-medium">Projects</h2>
-  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-    {projects.map((project) => <ProjectCard project={project} />)}
+<section id="work" class="mx-auto max-w-370 grid lg:grid-cols-2 px-6 py-16 justify-items-end lg:justify-items-center">
+  <div class="glass-box-light p-6 rounded-xl w-fit lg:col-start-2">
+    <h2 class="mb-4 text-4xl font-medium rounded-lg px-4 py-2 w-fit">Projects</h2>
+    <div class="flex flex-col justify-between gap-6">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
   </div>
+  
 </section>
+
+<style>
+  h2 {
+    font-family: var(--font-dela-gothic);
+  }
+</style>

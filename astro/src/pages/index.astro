@@ -10,22 +10,24 @@ import Contact from "../components/Contact.astro";
 
 <Layout title="Sean Wallace — Portfolio">
   <div id="background-render" class="fixed top-0 left-0 w-full h-full z-[-1]"></div>
-  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5] hidden">
+  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5]">
     <div id="loading-bar-container" class="flex flex-col w-md h-md justify-center">
       loading
-      <div id="loading-bar-fill" class="rounded-xl h-6 w-[0%] content-center transition-[width] duration-500 ease-in bg-taupe-200">
+      <div id="loading-bar-border" class="rounded-xl h-8 w-[100%] content-center border-3 bg-blue-200">
+        <div id="loading-bar-fill" class="rounded-xl h-6 w-[0%] content-center transition-[width] duration-500 ease-in bg-taupe-200">
+        </div>
       </div>
+      
     </div>
   </div>
   <!-- <Nav /> -->
-  <div id="page-content" class="">
+  <div id="page-content" class="invisible">
     
     <Hero />
 
     <div id="animation-wrapper-door" class="h-[20vh]" >
     </div>
      
-    
     
     <div id="animation-wrapper-door-to-water" class="h-[90vh]">
 
@@ -35,7 +37,7 @@ import Contact from "../components/Contact.astro";
       <Experience />
     </div>
     
-    <div id="animation-wrapper-water-to-tokonoma" class="h-[90vh]"></div>
+    <div id="animation-wrapper-water-to-tokonoma" class="h-[120vh]"></div>
 
     <div id="animation-wrapper-tokonoma">
       <Projects />
@@ -76,8 +78,6 @@ import Contact from "../components/Contact.astro";
   const aniWrapperTokonoma = document.getElementById('animation-wrapper-tokonoma')as HTMLElement;
   const aniWrapperTokonomaToTable = document.getElementById('animation-wrapper-tokonoma-to-table')as HTMLElement;
   const aniWrapperTable = document.getElementById('animation-wrapper-table')as HTMLElement;
-
-  
 
   const loadingPage = document.getElementById('loading-page') as HTMLElement;
   const loadingBar = document.getElementById('loading-bar-fill') as HTMLElement;

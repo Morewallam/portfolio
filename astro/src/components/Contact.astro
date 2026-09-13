@@ -2,19 +2,34 @@
 
 
 import { socials } from "../data/content";
+import { Icon } from 'astro-icon/components'
 ---
 
-<section id="contact" class="mx-auto max-w-[1100px] px-6 py-16 text-center h-[50vh]">
-  <div class="glass-box">
-    <h2 class="mb-2 text-xl font-medium">Get in touch</h2>
-    <p class="text-neutral-500">Best way to reach me is by email.</p>
+<section id="contact" class="mx-auto w-fit px-6 py-16 h-[50vh]">
+  <div class="glass-box rounded-xl p-3">
+
+    <span class="text-xl ">Thank you for looking through my website. I hope you enjoyed it.</span>
+    <h2 class="mb-2 mt-4 text-3xl font-medium">Get in touch</h2>
+    
     {socials.map((info)=>(
-      
-      <a href={info.url} class="mt-2 inline-block text-lg underline">
-      {info.icon}
-    </a>
+    <div><Icon name={info.icon} class="text-2xl text-black inline mr-1"/><a
+            href={info.url} target="_blank"
+            rel="noopener noreferrer">{info.label}</a></div>
     ))}
+
+    <!-- <div><Icon name="envelope-solid-full" class="text-2xl text-black inline mr-1"/>swallace987@gmail.com</div>
+    <div ><Icon name="linkedin-brands-solid" class="text-2xl text-black inline mr-1"/><a
+            href="https://www.linkedin.com/in/seancwallace30" target="_blank"
+            rel="noopener noreferrer">seancwallace30</a></div>
+    <div ><Icon name="github-brands-solid" class="text-2xl text-black inline mr-"/><a href="https://github.com/Morewallam"
+            target="_blank" rel="noopener noreferrer">Morewallam</a>
+    </div> -->
   </div>
   
   
 </section>
+
+
+<!-- <div id="contact-info-section">
+                
+            </div> -->

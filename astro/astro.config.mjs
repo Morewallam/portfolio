@@ -2,6 +2,8 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from "@tailwindcss/vite";
 
+import icon from "astro-icon";
+
 // https://astro.build/config
 export default defineConfig({
   fonts:[{
@@ -15,7 +17,10 @@ export default defineConfig({
     cssVariable: "--font-dela-gothic"
   }
   ],
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  integrations: [icon()],
 });

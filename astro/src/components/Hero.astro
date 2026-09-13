@@ -35,6 +35,9 @@
     transition: opacity 0.05s linear;
     will-change: opacity;
   }
+  /* #scroll_down_message{
+    font-family: var(--font-dela-gothic);
+  } */
 </style>
 
 <script>
@@ -52,6 +55,13 @@
 
     const blur = MAX_BLUR * (1 - progress);
     const opacity = 1 - progress;
+
+    if(opacity == 0){
+      heroBg?.style.setProperty('display','none')
+    }
+    else{
+      heroBg?.style.setProperty('display','block')
+    }
 
     heroBg?.style.setProperty('--hero-blur', `${blur}px`);
     heroBg?.style.setProperty('--hero-opacity', opacity.toString());

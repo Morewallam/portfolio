@@ -2,18 +2,31 @@
 import { skills } from "../data/content";
 ---
 
-<section id="skills" class="mx-auto max-w-[1100px] px-6 py-16 glass-box">
-  <h2 class="mb-4 text-xl font-medium">Skills</h2>
-  <div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
-    {skills.map((group) => (
-      <div class="glass-box">
-        <h3 class="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-400">
-          {group.category}
-        </h3>
-        <ul class="flex flex-col gap-1 text-sm">
-          {group.items.map((item) => <li>{item}</li>)}
-        </ul>
-      </div>
-    ))}
+<section id="skills" class="mx-auto max-w-350 px-6 py-16 grid lg:grid-cols-2 lg:justify-items-center">
+  <div class="glass-box-light p-6 w-fit rounded-xl">
+    <h2 class="mb-4 text-3xl font-medium p-3">Skills</h2>
+    <div class="flex flex-col gap-6">
+      {skills.map((group) => (
+        <div class="p-3  rounded border-b-1 border-neutral-200">
+          <h3 class="mb-2 uppercase tracking-wide">
+            {group.category}
+          </h3>
+          <div class="flex flex-wrap gap-1 text-sm">
+            {group.items.map((item) => 
+              <div class="glass-box-light rounded-lg p-2 w-fit text-nowrap">
+                {item}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
+  
 </section>
+
+<style>
+  h2 {
+    font-family: var(--font-dela-gothic);
+  }
+</style>

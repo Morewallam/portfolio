@@ -5,14 +5,14 @@
 }
 
 .glass-box {
-  background-color: rgb(255 255 255 / 60%); /* Translucent white */
+  background-color: rgb(255 255 255 / 80%); /* Translucent white */
   backdrop-filter: blur(10px);               /* Blurs whatever is behind the div */
   -webkit-backdrop-filter: blur(10px);       /* Safari support */
   border: 1px solid rgb(255 255 255 / 20%);  /* Optional subtle edge */
 }
 
 .glass-box-light {
-  background-color: rgb(255 255 255 / 20%); /* Translucent white */
+  background-color: rgb(255 255 255 / 40%); /* Translucent white */
   backdrop-filter: blur(5px);               /* Blurs whatever is behind the div */
   -webkit-backdrop-filter: blur(5px);       /* Safari support */
   border: 1px solid rgb(255 255 255 / 20%);  /* Optional subtle edge */
