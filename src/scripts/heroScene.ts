@@ -301,15 +301,32 @@ export class HeroScene {
       let deltaGamma = event.gamma - this.gyroBaseline.gamma; // tilt left/right
 
       // beta/gamma swap meaning in landscape — remap based on screen angle
-      const angle = (screen.orientation?.angle ?? (window as any).orientation ?? 0) as number;
-      if (angle === 90) {
-        [deltaBeta, deltaGamma] = [-deltaGamma, deltaBeta];
-      } else if (angle === -90 || angle === 270) {
-        [deltaBeta, deltaGamma] = [deltaGamma, -deltaBeta];
-      }
+      // const angle = (screen.orientation?.angle ?? 0) as number;
+      // switch(screen.orientation.type){
+      //   case "landscape-primary":
+      //     console.log("That looks good.");
+      //     break;
+      //   case "landscape-secondary":
+      //     console.log("Mmm… the screen is upside down!");
+      //     break;
+      //   case "portrait-secondary":
+      //   case "portrait-primary":
+      //     console.log("Mmm… you should rotate your device to landscape");
+      //     break;
+      //   default:
+      //     console.log("The orientation API isn't supported in this browser :(");
+      // }
 
-      const x = THREE.MathUtils.clamp(deltaGamma / this.gyroSensitivity, -1, 1);
-      const y = THREE.MathUtils.clamp(deltaBeta / this.gyroSensitivity, -1, 1);
+      //Start from portrait
+      //Rotation around the y axis gives you x movement GAMMA
+      //left is -90, right is 90
+      //Rotation around x is movment in the y BETA
+      //+90 top comes towards me -90 bottom comes towards me
+
+      const x = deltaGamma/-90
+      // const x = THREE.MathUtils.clamp(deltaGamma / this.gyroSensitivity, -1, 1);
+      const y = deltaBeta/180
+      // const y = THREE.MathUtils.clamp(deltaBeta / this.gyroSensitivity, -1, 1);
       this.targetMouseNDC.set(x, y);
     };
   
