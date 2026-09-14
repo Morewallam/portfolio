@@ -2,7 +2,7 @@ export interface Project {
   title: string;
   description: string;
   tech: string[];
-  image: string;
+  image: ImageMetadata;
   liveUrl?: string;
   codeUrl?: string;
   featured?: boolean;

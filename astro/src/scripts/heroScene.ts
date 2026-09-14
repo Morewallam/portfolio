@@ -4,8 +4,6 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { PMREMGenerator } from 'three';
-import { map } from "astro/zod";
-import { Loader, Progress } from "@react-three/drei";
 
 /**
  * Encapsulates the Three.js scene used in the hero section.
@@ -58,7 +56,7 @@ export class HeroScene {
 
     const GLTFloader = new GLTFLoader();
     GLTFloader.setDRACOLoader(dracoloader);
-    GLTFloader.load('/washitsu-outnorms-optimized.glb', (glb) => {
+    GLTFloader.load('/washitsu.glb', (glb) => {
       glb.scene.traverse((child) => {
 
         if (child instanceof THREE.Mesh) {
@@ -89,7 +87,7 @@ export class HeroScene {
         action.play();
       }
 
-      onProgressCallback?.(85); //Finsihed Adding animation
+      onProgressCallback?.(85); //Finished Adding animation
 
 
       //Set the cameras for the scene
@@ -107,7 +105,6 @@ export class HeroScene {
 
 
       onStartCallback();
-      onProgressCallback?.(100);
       
       
       }, (progress: ProgressEvent) => {
@@ -123,7 +120,7 @@ export class HeroScene {
       }
     )
 
-     //Finished adding the objects to the scene
+    //Finished adding the objects to the scene
 
 
 
@@ -133,7 +130,7 @@ export class HeroScene {
     pmremGenerator.compileEquirectangularShader();
 
     const backgroundLoader = new THREE.TextureLoader();
-    const texture = backgroundLoader.load('/images/seaBackground.jpg', () => {
+    const texture = backgroundLoader.load('/seaBackground.jpg', () => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       texture.colorSpace = THREE.SRGBColorSpace;
 
@@ -165,8 +162,6 @@ export class HeroScene {
 
     
     //Add in the view outside the window
-
-
 
 
     //Add the lighting to the scene

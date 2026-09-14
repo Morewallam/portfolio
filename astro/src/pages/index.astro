@@ -10,19 +10,17 @@ import Contact from "../components/Contact.astro";
 
 <Layout title="Sean Wallace — Portfolio">
   <div id="background-render" class="fixed top-0 left-0 w-full h-full z-[-1]"></div>
-  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5]">
+  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100vh] w-[100vw] justify-center z-[5] opacity-100 transition-opacity delay-500 duration-300 ease-in-out">
     <div id="loading-bar-container" class="flex flex-col w-md h-md justify-center">
-      loading
-      <div id="loading-bar-border" class="rounded-xl h-8 w-[100%] content-center border-3 bg-blue-200">
-        <div id="loading-bar-fill" class="rounded-xl h-6 w-[0%] content-center transition-[width] duration-500 ease-in bg-taupe-200">
+      <span id="loading-message">loading</span>
+      <div id="loading-bar-border" class="rounded-xl w-[100%] content-center border-3 bg-neutral-500">
+        <div id="loading-bar-fill" class="rounded-lg h-6 w-[0%] content-center transition-[width] bg-blue-500 duration-500 ease-in ">
         </div>
       </div>
       
     </div>
   </div>
-  <!-- <Nav /> -->
   <div id="page-content" class="invisible">
-    
     <Hero />
 
     <div id="animation-wrapper-door" class="h-[20vh]" >
@@ -55,10 +53,15 @@ import Contact from "../components/Contact.astro";
 
 </Layout>
 
+<style>
+  #loading-message {
+    font-family: var(--font-dela-gothic);
+  }
+</style>
 
 <script>
-  import { number, set } from "astro:schema";
-  import { HeroScene } from "../scripts/heroScene";
+  import { LinearInterpolant } from "three";
+import { HeroScene } from "../scripts/heroScene";
 
   const container = document.getElementById("background-render");
 
@@ -95,9 +98,7 @@ import Contact from "../components/Contact.astro";
     endFrame: number;
   };
 
-  // 0 -> 1 progress through a single wrapper's own scroll range.
-  // 0 when the wrapper's top just reaches the top of the viewport,
-  // 1 when the wrapper's bottom reaches the top of the viewport.
+  
   function getWrapperProgress(wrapper: HTMLElement): number {
     const rect = wrapper.getBoundingClientRect();
     const viewportHeight = window.innerHeight/2;
@@ -107,10 +108,7 @@ import Contact from "../components/Contact.astro";
     return percent;
   }
 
-  // Ordered oldest -> newest. Only wrappers that should actively drive
-  // the animation as you scroll through them belong here — content
-  // wrappers (About/Experience, Projects/Skills) are intentionally
-  // left out, so the scene just holds its frame while you read.
+ 
   const segments: AnimationSegment[] = [
     { wrapper: aniWrapperDoor,      startFrame: 0,   endFrame: panInStartFrame },
     { wrapper: aniWrapperDoorToWater,      startFrame: panInStartFrame,   endFrame: panToTokomaStartFrame },
@@ -147,8 +145,24 @@ import Contact from "../components/Contact.astro";
     const scene = new HeroScene(container, setPercent, () => {
       scene.startrender();
       scene.setanimateframe(computeFrame());
-      loadingPage.classList.add("hidden");
-      pageContent.classList.remove("invisible");
+      requestAnimationFrame(() => {
+          setPercent(100)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              //Set the progress to 100% and let the animation get there
+              loadingPage.style.opacity = "0";
+              //Fade out the loadingPage
+              pageContent.classList.remove("invisible");
+              });
+          });     
+      })
+
+      setTimeout(()=>{
+        loadingPage.classList.add('hidden')
+      },800)
+      
+       
+      
     });
 
     window.addEventListener("scroll", () => onScroll(scene), { passive: true });

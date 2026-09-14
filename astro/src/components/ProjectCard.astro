@@ -1,5 +1,6 @@
 ---
 import type { Project } from "../data/types";
+import { Image } from 'astro:assets';
 
 interface Props {
   project: Project;
@@ -9,12 +10,7 @@ const { project } = Astro.props;
 ---
 
 <article class:list={["overflow-hidden rounded-xl border border-neutral-200 glass-box-light max-w-md lg:max-w-xl mt-3"]}>
-  <img
-    src={project.image}
-    alt={`Screenshot of ${project.title}`}
-    loading="lazy"
-    class="w-full bg-neutral-100 object-contain"
-  />
+  <img src={project.image.src} alt={`Screenshot of ${project.title}`} class="w-full bg-neutral-100 object-contain"/>
   <div class="p-4">
     <h3 class="mb-1 font-medium">{project.title}</h3>
     <p class="mb-3 text-sm text-neutral-500">{project.description}</p>

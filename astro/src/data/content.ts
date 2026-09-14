@@ -1,5 +1,9 @@
 import type { Project, ExperienceItem, SkillGroup, SocialLink } from "./types";
 
+import emotionDefenderImage from '../assests/images/EmotionDefender.png';
+import HMCImage from '../assests/images/HandmadeByClaire.png';
+import planeImage from '../assests/images/planeImage.jpg';
+
 export const about = {
   intro: "Hi, I'm Sean Wallace",
   passage: "I glad you came to check out my website. I am a software developer that enjoys developing projects, playing games and learning japanese."
@@ -10,7 +14,7 @@ export const projects: Project[] = [
     title: "Handmade By Claire",
     description: "A website for beautiful handmade works of art",
     tech: ["Astro", "TypeScript", "Sanity","Vercel"],
-    image: "/images/HandmadeByClaire.png",
+    image: HMCImage,
     liveUrl: "https://www.handmadebyclaire.com/",
     codeUrl: "https://github.com/Morewallam/HandmadebyClaire",
   },
@@ -18,14 +22,14 @@ export const projects: Project[] = [
     title: "Plane Segmentation",
     description: "Find planes from aerial images",
     tech: ["Python", "Pytorch"],
-    image: "/images/planeImage.jpg",
+    image: planeImage,
     codeUrl: "https://github.com/Morewallam/PlaneSegmentation",
   },
   {
     title: "Emotion Defender",
     description: "Use your expressions to hold off enemies",
     tech: ["Python","Pygame", "TensorFlow"],
-    image: "/images/EmotionDefender.png",
+    image: emotionDefenderImage,
     codeUrl: "https://github.com/Morewallam/EmotionDefender",
   },
 ];
