@@ -30,8 +30,8 @@ export class HeroScene {
   private onTouchStart: (e: TouchEvent) => void;
 
   private gyroBaseline: { beta: number; gamma: number } | null = null;
-  private readonly gyroSensitivityY = 5; // degrees of tilt that maps to full parallax range
-  private readonly gyroSensitivityX = 3;
+  private readonly gyroSensitivityY = 4; // degrees of tilt that maps to full parallax range
+  private readonly gyroSensitivityX = 2;
   private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
   private touching: boolean = false;
 
@@ -307,19 +307,19 @@ export class HeroScene {
       switch(screen.orientation.type){
         case "landscape-primary":
           x = -deltaBeta;
-          y = deltaGamma
+          y = -deltaGamma
           break;
         case "landscape-secondary":
           x = deltaBeta;
-          y = -deltaGamma
+          y = deltaGamma
           break;
         case "portrait-secondary": 
           x= -deltaGamma;
-          y = -deltaBeta
+          y = deltaBeta
           break;
         case "portrait-primary":
           x = deltaGamma;
-          y = deltaBeta
+          y = -deltaBeta
           break;
         default:
           x = 0
