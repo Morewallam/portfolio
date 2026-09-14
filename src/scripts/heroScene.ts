@@ -56,7 +56,7 @@ export class HeroScene {
 
     const GLTFloader = new GLTFLoader();
     GLTFloader.setDRACOLoader(dracoloader);
-    GLTFloader.load('/washitsu.glb', (glb) => {
+    GLTFloader.load('/portfolio/washitsu.glb', (glb) => {
       glb.scene.traverse((child) => {
 
         if (child instanceof THREE.Mesh) {
@@ -130,7 +130,7 @@ export class HeroScene {
     pmremGenerator.compileEquirectangularShader();
 
     const backgroundLoader = new THREE.TextureLoader();
-    const texture = backgroundLoader.load('/seaBackground.jpg', () => {
+    const texture = backgroundLoader.load('/portfolio/seaBackground.jpg', () => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       texture.colorSpace = THREE.SRGBColorSpace;
 
