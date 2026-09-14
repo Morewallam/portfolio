@@ -22,15 +22,17 @@ export class HeroScene {
   private baseQuaternion = new THREE.Quaternion();
   private mouseNDC = new THREE.Vector2(0, 0);
   private targetMouseNDC = new THREE.Vector2(0, 0);
-  private readonly parallaxMaxYaw = THREE.MathUtils.degToRad(15);   // look left/right
-  private readonly parallaxMaxPitch = THREE.MathUtils.degToRad(8); // look up/down
+  private readonly parallaxMaxYaw = THREE.MathUtils.degToRad(5);   // look left/right
+  private readonly parallaxMaxPitch = THREE.MathUtils.degToRad(2.5); // look up/down
   private onMouseMove: (e: MouseEvent) => void;
+  private onMouseLeave: (e: MouseEvent) => void;
   private onTouchEnd: (e: TouchEvent) => void;
   private onTouchStart: (e: TouchEvent) => void;
 
 
   private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
   private touching: boolean = false;
+  private gyro_enabled : boolean = false;
 
   private deviceQuaternion = new THREE.Quaternion();
   private baselineQuaternionInverse: THREE.Quaternion | null = null;
@@ -40,7 +42,7 @@ export class HeroScene {
 
   // -90° rotation around X: camera "looks out the back" of the device, not the top
   private readonly screenTransform = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
-  private readonly gyroSensitivityDeg = 15; // degrees of relative tilt for full parallax range
+  private readonly gyroSensitivityDeg = 5; // degrees of relative tilt for full parallax range
 
   constructor(private container: HTMLElement, onProgressCallback: (percent:number|null)=>void, onStartCallback: ()=>void) {
 
@@ -260,7 +262,6 @@ export class HeroScene {
 
     this.scene.add(doorlight)
     
-    this.clock = new THREE.Timer();
 
     // Keep the canvas sized to its container rather than the window,
     // so the hero can be resized independently of the viewport.
@@ -274,6 +275,11 @@ export class HeroScene {
       const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
       this.targetMouseNDC.set(x,y);
     };
+    this.onMouseLeave = (event: MouseEvent) => {
+      if (!event.relatedTarget) {
+        this.targetMouseNDC.set(0,0);
+      }
+    };
 
     this.onTouchStart = (event: TouchEvent)=>{
       this.targetMouseNDC.set(0,0);
@@ -285,8 +291,10 @@ export class HeroScene {
       this.baselineQuaternionInverse = null;//reset the baseline
     }
     window.addEventListener('mousemove', this.onMouseMove);
+    window.addEventListener('mouseout',this.onMouseLeave);
     window.addEventListener('touchstart', this.onTouchStart);
     window.addEventListener('touchend', this.onTouchEnd);
+
 
     this.onDeviceOrientation = (event: DeviceOrientationEvent) => {
       if (event.alpha === null || event.beta === null || event.gamma === null) return;
@@ -369,7 +377,8 @@ export class HeroScene {
   }
 
   gyro_permisson_granted():void{
-    window.addEventListener('deviceorientation', this.onDeviceOrientation);
+    this.gyro_enabled = true;
+    // window.addEventListener('deviceorientation', this.onDeviceOrientation);
   }
 
   startrender():void {
@@ -384,7 +393,8 @@ export class HeroScene {
   dispose(): void {
     this.stop();
     window.removeEventListener('mousemove', this.onMouseMove);
-    window.removeEventListener('deviceorientation', this.onDeviceOrientation);
+    if(this.gyro_enabled) window.removeEventListener('deviceorientation', this.onDeviceOrientation);
+    window.removeEventListener('mouseleave',this.onMouseLeave);
     window.removeEventListener('touchstart', this.onTouchStart);
     window.removeEventListener('touchend', this.onTouchEnd);
     this.resizeObserver.disconnect();
