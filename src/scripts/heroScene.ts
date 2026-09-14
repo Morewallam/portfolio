@@ -30,7 +30,8 @@ export class HeroScene {
   private onTouchStart: (e: TouchEvent) => void;
 
   private gyroBaseline: { beta: number; gamma: number } | null = null;
-  private readonly gyroSensitivity = 30; // degrees of tilt that maps to full parallax range
+  private readonly gyroSensitivityY = 30; // degrees of tilt that maps to full parallax range
+  private readonly gyroSensitivityX = 15;
   private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
   private touching: boolean = false;
 
@@ -297,26 +298,28 @@ export class HeroScene {
         return;
       }
 
-      let deltaBeta = (event.beta - this.gyroBaseline.beta)/180;   // tilt forward/back
-      let deltaGamma = (event.gamma - this.gyroBaseline.gamma)/-90; // tilt left/right
+      let deltaBeta = THREE.MathUtils.clamp(this.gyroSensitivityY*(event.beta - this.gyroBaseline.beta)/180,-1,1);   // tilt forward/back
+      let deltaGamma = THREE.MathUtils.clamp(this.gyroSensitivityX*(event.gamma - this.gyroBaseline.gamma)/-90, -1,1); // tilt left/right
 
       // beta/gamma swap meaning in landscape — remap based on screen angle
       let x = 0; 
-      const angle = (screen.orientation?.angle ?? 0) as number;
+      let y = 0;
       switch(screen.orientation.type){
         case "landscape-primary":
           x = -deltaBeta;
-          
+          y = deltaGamma
           break;
         case "landscape-secondary":
           x = deltaBeta;
-          
+          y = -deltaGamma
           break;
         case "portrait-secondary": 
           x= -deltaGamma;
+          y = -deltaBeta
           break;
         case "portrait-primary":
           x = deltaGamma;
+          y = deltaBeta
           break;
         default:
           x = 0
@@ -332,7 +335,7 @@ export class HeroScene {
       // const x = THREE.MathUtils.clamp(deltaGamma / this.gyroSensitivity, -1, 1);
       // const y = deltaBeta/180
       // const y = THREE.MathUtils.clamp(deltaBeta / this.gyroSensitivity, -1, 1);
-      this.targetMouseNDC.set(x, 0);
+      this.targetMouseNDC.set(x, y);
     };
   
 
