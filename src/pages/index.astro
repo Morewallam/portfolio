@@ -60,6 +60,7 @@ import Contact from "../components/Contact.astro";
 </style>
 
 <script>
+import { resolve } from "@react-three/fiber/dist/declarations/src/core/utils";
 import { HeroScene } from "../scripts/heroScene";
 
   const container = document.getElementById("background-render");
@@ -160,13 +161,37 @@ import { HeroScene } from "../scripts/heroScene";
       setTimeout(()=>{
         loadingPage.classList.add('hidden')
       },800)
+
+       
+      requestGyroPermission().then(()=>{
+        scene.gyro_permisson_granted()
+      },()=>{})
       
        
       
     });
+
+
+    
     
     window.addEventListener("scroll", () => onScroll(scene), { passive: true });
     window.addEventListener("beforeunload", () => scene.dispose());
+  }
+
+  async function requestGyroPermission(): Promise<boolean> {
+    const DOE = (window as any).DeviceOrientationEvent;
+    if (!DOE) return false;
+
+    if (typeof DOE.requestPermission === 'function') {
+      // iOS 13+ path
+      try {
+        const result = await DOE.requestPermission();
+        if (result !== 'granted') return false;
+      } catch {
+        return false;
+      }
+    }
+    return true;
   }
 
   

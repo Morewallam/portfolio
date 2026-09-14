@@ -26,6 +26,13 @@ export class HeroScene {
   private readonly parallaxMaxYaw = THREE.MathUtils.degToRad(15);   // look left/right
   private readonly parallaxMaxPitch = THREE.MathUtils.degToRad(8); // look up/down
   private onMouseMove: (e: MouseEvent) => void;
+  private onTouchEnd: (e: TouchEvent) => void;
+  private onTouchStart: (e: TouchEvent) => void;
+
+  private gyroBaseline: { beta: number; gamma: number } | null = null;
+  private readonly gyroSensitivity = 30; // degrees of tilt that maps to full parallax range
+  private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
+  private touching: boolean = false;
 
   constructor(private container: HTMLElement, onProgressCallback: (percent:number|null)=>void, onStartCallback: ()=>void) {
 
@@ -259,12 +266,55 @@ export class HeroScene {
       const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
       this.targetMouseNDC.set(x,y);
     };
-    window.addEventListener('pointermove', this.onMouseMove);
-    window.addEventListener('pointerdown', this.onMouseMove);
-    
+
+    this.onTouchStart = (event: TouchEvent)=>{
+      this.targetMouseNDC.set(0,0);
+      this.touching = true;
+    }
+
+    this.onTouchEnd = (event: TouchEvent)=>{
+      this.touching = false;
+      this.gyroBaseline = null; //reset the baseline
+    }
+    window.addEventListener('mousemove', this.onMouseMove);
+    window.addEventListener('touchstart', this.onTouchStart);
+    window.addEventListener('touchend', this.onTouchEnd);
+
+    this.onDeviceOrientation = (event: DeviceOrientationEvent) => {
+      if (event.beta === null || event.gamma === null) return;
+      if(this.touching) return
+      
+      //Get the baseline if it has not been set or update it if it is being touched
+      if (!this.gyroBaseline) {
+        this.gyroBaseline = { beta: event.beta, gamma: event.gamma };
+        return;
+      }
+
+      //If the screen is being touched dont use gyro
+      if(this.touching){
+        this.gyroBaseline.beta = event.beta
+        this.gyroBaseline.gamma = event.gamma
+        return;
+      }
+
+      let deltaBeta = event.beta - this.gyroBaseline.beta;   // tilt forward/back
+      let deltaGamma = event.gamma - this.gyroBaseline.gamma; // tilt left/right
+
+      // beta/gamma swap meaning in landscape — remap based on screen angle
+      const angle = (screen.orientation?.angle ?? (window as any).orientation ?? 0) as number;
+      if (angle === 90) {
+        [deltaBeta, deltaGamma] = [-deltaGamma, deltaBeta];
+      } else if (angle === -90 || angle === 270) {
+        [deltaBeta, deltaGamma] = [deltaGamma, -deltaBeta];
+      }
+
+      const x = THREE.MathUtils.clamp(deltaGamma / this.gyroSensitivity, -1, 1);
+      const y = THREE.MathUtils.clamp(deltaBeta / this.gyroSensitivity, -1, 1);
+      this.targetMouseNDC.set(x, y);
+    };
+  
 
   }
-
 
   private handleResize(): void {
     const { clientWidth, clientHeight } = this.container;
@@ -305,6 +355,11 @@ export class HeroScene {
 
   }
 
+  gyro_permisson_granted():void{
+    this.gyroBaseline = null; // reset so the next event recalibrates
+    window.addEventListener('deviceorientation', this.onDeviceOrientation);
+  }
+
   startrender():void {
     this.animationMixer?.setTime(this.frameId/24)
     this.renderer.setAnimationLoop(this.render);
@@ -317,6 +372,9 @@ export class HeroScene {
   dispose(): void {
     this.stop();
     window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('deviceorientation', this.onDeviceOrientation);
+    window.removeEventListener('touchstart', this.onTouchStart);
+    window.removeEventListener('touchend', this.onTouchEnd);
     this.resizeObserver.disconnect();
     this.renderer.dispose();
     this.renderer.domElement.remove();
