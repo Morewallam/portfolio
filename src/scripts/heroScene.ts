@@ -52,7 +52,7 @@ export class HeroScene {
   
 
     const dracoloader = new DRACOLoader();
-    dracoloader.setDecoderPath('/draco/');
+    dracoloader.setDecoderPath('/portfolio/draco/');
 
     const GLTFloader = new GLTFLoader();
     GLTFloader.setDRACOLoader(dracoloader);
