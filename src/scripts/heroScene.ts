@@ -316,10 +316,10 @@ export class HeroScene {
       const relative = this.baselineQuaternionInverse.clone().multiply(this.deviceQuaternion); 
       this.relativeEuler.setFromQuaternion(relative, 'YXZ');
 
-      const x = THREE.MathUtils.clamp(
+      const x = -THREE.MathUtils.clamp(
         THREE.MathUtils.radToDeg(this.relativeEuler.y) / this.gyroSensitivityDeg, -1, 1
       );
-      const y = THREE.MathUtils.clamp(
+      const y = -THREE.MathUtils.clamp(
         THREE.MathUtils.radToDeg(this.relativeEuler.x) / this.gyroSensitivityDeg, -1, 1
       );
 
