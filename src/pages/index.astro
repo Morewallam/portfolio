@@ -60,7 +60,6 @@ import Contact from "../components/Contact.astro";
 </style>
 
 <script>
-  import { LinearInterpolant } from "three";
 import { HeroScene } from "../scripts/heroScene";
 
   const container = document.getElementById("background-render");
@@ -149,9 +148,9 @@ import { HeroScene } from "../scripts/heroScene";
           setPercent(100)
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              //Set the progress to 100% and let the animation get there
+              
               loadingPage.style.opacity = "0";
-              //Fade out the loadingPage
+              
               pageContent.classList.remove("invisible");
               });
           });     
