@@ -142,6 +142,7 @@ import { HeroScene } from "../scripts/heroScene";
 
   if (container) {
     const scene = new HeroScene(container, setPercent, () => {
+      
       scene.startrender();
       scene.setanimateframe(computeFrame());
       requestAnimationFrame(() => {
@@ -163,7 +164,7 @@ import { HeroScene } from "../scripts/heroScene";
        
       
     });
-
+    
     window.addEventListener("scroll", () => onScroll(scene), { passive: true });
     window.addEventListener("beforeunload", () => scene.dispose());
   }

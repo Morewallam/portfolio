@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { PMREMGenerator } from 'three';
+import type { pow2 } from "three/src/nodes/TSL.js";
 
 /**
  * Encapsulates the Three.js scene used in the hero section.
@@ -14,11 +14,18 @@ export class HeroScene {
   private renderer: THREE.WebGLRenderer;
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
-  // private mesh: THREE.Mesh;
+  
   private clock: THREE.Timer;
   private frameId: number = 0;
   private animationMixer: THREE.AnimationMixer | null = null;
   private resizeObserver: ResizeObserver;
+
+  private baseQuaternion = new THREE.Quaternion();
+  private mouseNDC = new THREE.Vector2(0, 0);
+  private targetMouseNDC = new THREE.Vector2(0, 0);
+  private readonly parallaxMaxYaw = THREE.MathUtils.degToRad(15);   // look left/right
+  private readonly parallaxMaxPitch = THREE.MathUtils.degToRad(8); // look up/down
+  private onMouseMove: (e: MouseEvent) => void;
 
   constructor(private container: HTMLElement, onProgressCallback: (percent:number|null)=>void, onStartCallback: ()=>void) {
 
@@ -33,12 +40,6 @@ export class HeroScene {
     this.camera.position.z = 1;
     this.camera.position.x = 1;
     this.camera.position.y = 1;
-
-
-    const controls = new OrbitControls(this.camera, container);
-    controls.target.set(0, 0, 0);
-    controls.update();
-    
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -99,7 +100,9 @@ export class HeroScene {
         
         this.camera.aspect = container.clientWidth / container.clientHeight;
         this.camera.updateProjectionMatrix();
+        
       }
+      this.baseQuaternion.copy(this.camera.quaternion)
 
       onProgressCallback?.(90); //Finsihed Adding cameras
 
@@ -248,6 +251,16 @@ export class HeroScene {
     // so the hero can be resized independently of the viewport.
     this.resizeObserver = new ResizeObserver(() => this.handleResize());
     this.resizeObserver.observe(container);
+
+    this.onMouseMove = (event: MouseEvent) => {
+      const rect = this.container.getBoundingClientRect();
+      
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+      this.targetMouseNDC.set(x,y);
+    };
+    window.addEventListener('pointermove', this.onMouseMove);
+    window.addEventListener('pointerdown', this.onMouseMove);
     
 
   }
@@ -262,25 +275,39 @@ export class HeroScene {
     this.startrender()
   }
 
-  private animate = () :void => {
-    this.clock.update();
-    this.animationMixer?.update(this.clock.getDelta());
+  private setCameraOffset():void{
+    this.mouseNDC.lerp(this.targetMouseNDC, 0.08);
+
+    const yaw = -this.mouseNDC.x * this.parallaxMaxYaw;
+    const pitch = -this.mouseNDC.y * this.parallaxMaxPitch;
+
+    const offset = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(pitch, yaw, 0, 'YXZ')
+    );
+
+    this.camera.quaternion.copy(this.baseQuaternion).multiply(offset);
+  }
+
+  private render = () :void => {
+    this.setCameraOffset()
     this.renderer.render(this.scene, this.camera);
   }
 
   public setanimateframe(frameid:number):void {
+    this.camera.quaternion.copy(this.baseQuaternion) //Reset the cameras rotation before applying the animation
     this.animationMixer?.setTime(frameid/24);
-    this.renderer.render(this.scene, this.camera);
-    this.frameId = frameid
-  }
+    
+    this.baseQuaternion.copy(this.camera.quaternion); //Set the new fixed rotation from the result of the animation
 
-  start(): void {
-    this.renderer.setAnimationLoop(this.animate);
+    this.render()
+    this.frameId = frameid
+    
+
   }
 
   startrender():void {
-    this.renderer.render(this.scene, this.camera);
     this.animationMixer?.setTime(this.frameId/24)
+    this.renderer.setAnimationLoop(this.render);
   }
 
   stop(): void {
@@ -289,6 +316,7 @@ export class HeroScene {
 
   dispose(): void {
     this.stop();
+    window.removeEventListener('mousemove', this.onMouseMove);
     this.resizeObserver.disconnect();
     this.renderer.dispose();
     this.renderer.domElement.remove();
