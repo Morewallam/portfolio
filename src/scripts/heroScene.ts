@@ -166,7 +166,7 @@ export class HeroScene {
     //Add the lighting to the scene
     //Main sun light
     this.scene.add(new THREE.AmbientLight(0xfff2d8, 0.1));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 5);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 3);
     dirLight.position.set(-1*4+ 0, (1.5-0.25)*4 + 0.25, (0.65+0.5)*4 + -0.5);
     dirLight.castShadow = true;
 
@@ -179,14 +179,12 @@ export class HeroScene {
     dirLight.shadow.camera.right = 5;
     dirLight.shadow.camera.top = 5;
     dirLight.shadow.camera.bottom = -5;
-    dirLight.shadow.bias = -0.0002; // helps with shadow acne if you see stripes
+    dirLight.shadow.bias = -0.0005; // helps with shadow acne if you see stripes
 
     
     this.scene.add(dirLight);
 
     
-
-
 
     //The light inside the room that is supposed to come from the sun. 
     const insidedirLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -209,14 +207,14 @@ export class HeroScene {
 
 
     //The light to illumiate the plant section
-    const plantlight = new THREE.PointLight(0xffffff, 2, 5, 0.5);
+    const plantlight = new THREE.PointLight(0xffffff, 2, 5, 1.5);
     plantlight.position.set(-1, 2.25, -2.75);
     plantlight.castShadow = true;
 
     plantlight.shadow.mapSize.set(1024, 1024); // resolution — trade off vs perf
     plantlight.shadow.camera.near = 0.1;
     plantlight.shadow.camera.far = 6;
-    plantlight.shadow.bias = -0.0002;
+    plantlight.shadow.bias = -0.0005;
     this.scene.add(plantlight);
     RectAreaLightUniformsLib.init()
    
