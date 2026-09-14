@@ -6,6 +6,8 @@ import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://morewallam.github.io',
+  base: '/portfolio',
   fonts:[{
     provider: fontProviders.google(),
     name: "Google Sans",
