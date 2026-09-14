@@ -378,7 +378,7 @@ export class HeroScene {
 
   gyro_permisson_granted():void{
     this.gyro_enabled = true;
-    // window.addEventListener('deviceorientation', this.onDeviceOrientation);
+    window.addEventListener('deviceorientation', this.onDeviceOrientation);
   }
 
   startrender():void {

@@ -9,48 +9,53 @@ import Contact from "../components/Contact.astro";
 ---
 
 <Layout title="Sean Wallace — Portfolio">
-  <div id="background-render" class="fixed top-0 left-0 w-full h-lvh z-[-1]"></div>
-  <div id="loading-page" class="fixed top-0 left-0 bg-blue-50 flex h-[100lvh] w-[100vw] justify-center z-[5] opacity-100 transition-opacity delay-500 duration-300 ease-in-out">
-    <div id="loading-bar-container" class="flex flex-col w-md h-md justify-center p-10">
+  <div id="background-render" class="fixed top-0 left-0 w-full h-lvh z-[-1]">
+  </div>
+  <div
+    id="loading-page"
+    class="fixed top-0 left-0 bg-blue-50 flex h-[100lvh] w-[100vw] justify-center z-[5] opacity-100 transition-opacity delay-500 duration-300 ease-in-out"
+  >
+    <div
+      id="loading-bar-container"
+      class="flex flex-col w-md h-md justify-center p-10"
+    >
       <span id="loading-message">loading</span>
-      <div id="loading-bar-border" class="rounded-xl w-[100%] content-center border-3 bg-neutral-500">
-        <div id="loading-bar-fill" class="rounded-lg h-6 w-[0%] content-center transition-[width] bg-blue-500 duration-500 ease-in ">
+      <div
+        id="loading-bar-border"
+        class="rounded-xl w-[100%] content-center border-3 bg-neutral-500"
+      >
+        <div
+          id="loading-bar-fill"
+          class="rounded-lg h-6 w-[0%] content-center transition-[width] bg-blue-500 duration-500 ease-in"
+        >
         </div>
       </div>
-      
     </div>
   </div>
   <div id="page-content" class="invisible">
     <Hero />
 
-    <div id="animation-wrapper-door" class="h-[20lvh]" >
-    </div>
-     
-    
-    <div id="animation-wrapper-door-to-water" class="h-[90lvh]">
+    <div id="animation-wrapper-door" class="h-[20lvh]"></div>
 
-    </div>
+    <div id="animation-wrapper-door-to-water" class="h-[90lvh]"></div>
     <div id="animation-wrapper-water">
       <About />
       <Experience />
     </div>
-    
+
     <div id="animation-wrapper-water-to-tokonoma" class="h-[120lvh]"></div>
 
     <div id="animation-wrapper-tokonoma">
       <Projects />
       <Skills />
     </div>
-    
-    <div id="animation-wrapper-tokonoma-to-table" class="h-[90lvh]">
-    </div>
+
+    <div id="animation-wrapper-tokonoma-to-table" class="h-[90lvh]"></div>
 
     <div id="animation-wrapper-table">
-    <Contact />
-     </div>
-  
+      <Contact />
+    </div>
   </div>
-
 </Layout>
 
 <style>
@@ -60,35 +65,49 @@ import Contact from "../components/Contact.astro";
 </style>
 
 <script>
-import { resolve } from "@react-three/fiber/dist/declarations/src/core/utils";
-import { HeroScene } from "../scripts/heroScene";
+  import { resolve } from "@react-three/fiber/dist/declarations/src/core/utils";
+  import { HeroScene } from "../scripts/heroScene";
 
   const container = document.getElementById("background-render");
 
-  const totalAnimationFrames = 320
+  const totalAnimationFrames = 320;
 
-  const panInStartFrame = 48
-  const outsideDoorOpenStartFrame = 96
-  const panToTokomaStartFrame = 144
-  const outsideDoorCloseStartFrame = 192
-  const panToTableStartFrame = 240 
-  const panToTableEndFrame = 288
+  const panInStartFrame = 48;
+  const outsideDoorOpenStartFrame = 96;
+  const panToTokomaStartFrame = 144;
+  const outsideDoorCloseStartFrame = 192;
+  const panToTableStartFrame = 240;
+  const panToTableEndFrame = 288;
 
-  const aniWrapperDoor = document.getElementById('animation-wrapper-door')as HTMLElement;
-  const aniWrapperDoorToWater = document.getElementById('animation-wrapper-door-to-water')as HTMLElement;
-  const aniWrapperWater = document.getElementById('animation-wrapper-water')as HTMLElement;
-  const aniWrapperWaterToTokonoma = document.getElementById('animation-wrapper-water-to-tokonoma')as HTMLElement;
-  const aniWrapperTokonoma = document.getElementById('animation-wrapper-tokonoma')as HTMLElement;
-  const aniWrapperTokonomaToTable = document.getElementById('animation-wrapper-tokonoma-to-table')as HTMLElement;
-  const aniWrapperTable = document.getElementById('animation-wrapper-table')as HTMLElement;
+  const aniWrapperDoor = document.getElementById(
+    "animation-wrapper-door",
+  ) as HTMLElement;
+  const aniWrapperDoorToWater = document.getElementById(
+    "animation-wrapper-door-to-water",
+  ) as HTMLElement;
+  const aniWrapperWater = document.getElementById(
+    "animation-wrapper-water",
+  ) as HTMLElement;
+  const aniWrapperWaterToTokonoma = document.getElementById(
+    "animation-wrapper-water-to-tokonoma",
+  ) as HTMLElement;
+  const aniWrapperTokonoma = document.getElementById(
+    "animation-wrapper-tokonoma",
+  ) as HTMLElement;
+  const aniWrapperTokonomaToTable = document.getElementById(
+    "animation-wrapper-tokonoma-to-table",
+  ) as HTMLElement;
+  const aniWrapperTable = document.getElementById(
+    "animation-wrapper-table",
+  ) as HTMLElement;
 
-  const loadingPage = document.getElementById('loading-page') as HTMLElement;
-  const loadingBar = document.getElementById('loading-bar-fill') as HTMLElement;
-  const pageContent = document.getElementById('page-content') as HTMLElement;
+  const loadingPage = document.getElementById("loading-page") as HTMLElement;
+  const loadingBar = document.getElementById("loading-bar-fill") as HTMLElement;
+  const pageContent = document.getElementById("page-content") as HTMLElement;
 
-  function setPercent(percent: number|null){
-    if(percent !== null){
-      loadingBar.style.width = `${percent}%`
+  function setPercent(percent: number | null) {
+    if (percent !== null) {
+      loadingBar.style.width = `${percent}%`;
     }
   }
 
@@ -98,31 +117,56 @@ import { HeroScene } from "../scripts/heroScene";
     endFrame: number;
   };
 
-  
   function getWrapperProgress(wrapper: HTMLElement): number {
     const rect = wrapper.getBoundingClientRect();
-    const viewportHeight = window.innerHeight/2;
+    const viewportHeight = window.innerHeight / 2;
 
-    const amountmoved = viewportHeight - rect.top 
-    const percent = Math.min(amountmoved/rect.height,1)
+    const amountmoved = viewportHeight - rect.top;
+    const percent = Math.min(amountmoved / rect.height, 1);
     return percent;
   }
 
- 
   const segments: AnimationSegment[] = [
-    { wrapper: aniWrapperDoor,      startFrame: 0,   endFrame: panInStartFrame },
-    { wrapper: aniWrapperDoorToWater,      startFrame: panInStartFrame,   endFrame: panToTokomaStartFrame },
-    { wrapper: aniWrapperWater,      startFrame: panToTokomaStartFrame,   endFrame: panToTokomaStartFrame },
-    { wrapper: aniWrapperWaterToTokonoma,  startFrame: panToTokomaStartFrame,  endFrame: outsideDoorCloseStartFrame },
-    { wrapper: aniWrapperTokonoma,  startFrame: outsideDoorCloseStartFrame,  endFrame: panToTableStartFrame },
-    { wrapper: aniWrapperTokonomaToTable,  startFrame: panToTableStartFrame, endFrame: panToTableEndFrame },
-    { wrapper: aniWrapperTable,  startFrame: panToTableEndFrame, endFrame: totalAnimationFrames },
+    { wrapper: aniWrapperDoor, startFrame: 0, endFrame: panInStartFrame },
+    {
+      wrapper: aniWrapperDoorToWater,
+      startFrame: panInStartFrame,
+      endFrame: panToTokomaStartFrame,
+    },
+    {
+      wrapper: aniWrapperWater,
+      startFrame: panToTokomaStartFrame,
+      endFrame: panToTokomaStartFrame,
+    },
+    {
+      wrapper: aniWrapperWaterToTokonoma,
+      startFrame: panToTokomaStartFrame,
+      endFrame: outsideDoorCloseStartFrame,
+    },
+    {
+      wrapper: aniWrapperTokonoma,
+      startFrame: outsideDoorCloseStartFrame,
+      endFrame: panToTableStartFrame,
+    },
+    {
+      wrapper: aniWrapperTokonomaToTable,
+      startFrame: panToTableStartFrame,
+      endFrame: panToTableEndFrame,
+    },
+    {
+      wrapper: aniWrapperTable,
+      startFrame: panToTableEndFrame,
+      endFrame: totalAnimationFrames,
+    },
   ];
-  
+
   function computeFrame(): number {
-    for (let i = 0 ; i<segments.length; i++) {
+    for (let i = 0; i < segments.length; i++) {
       const rect = segments[i].wrapper.getBoundingClientRect();
-      if (rect.top <= window.innerHeight/2 && rect.bottom > window.innerHeight/2) {
+      if (
+        rect.top <= window.innerHeight / 2 &&
+        rect.bottom > window.innerHeight / 2
+      ) {
         const progress = getWrapperProgress(segments[i].wrapper);
         const { startFrame, endFrame } = segments[i];
         return startFrame + progress * (endFrame - startFrame);
@@ -132,7 +176,7 @@ import { HeroScene } from "../scripts/heroScene";
   }
 
   let framePending = false;
-  function onScroll(scene:HeroScene) {
+  function onScroll(scene: HeroScene) {
     if (framePending) return;
     framePending = true;
     requestAnimationFrame(() => {
@@ -143,37 +187,28 @@ import { HeroScene } from "../scripts/heroScene";
 
   if (container) {
     const scene = new HeroScene(container, setPercent, () => {
-      
       scene.startrender();
       scene.setanimateframe(computeFrame());
       requestAnimationFrame(() => {
-          setPercent(100)
+        setPercent(100);
+        requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              
-              loadingPage.style.opacity = "0";
-              
-              pageContent.classList.remove("invisible");
-              });
-          });     
-      })
+            loadingPage.style.opacity = "0";
 
-      setTimeout(()=>{
-        loadingPage.classList.add('hidden')
-      },800)
+            pageContent.classList.remove("invisible");
+          });
+        });
+      });
 
-       
-      requestGyroPermission().then(()=>{
-        scene.gyro_permisson_granted()
-      },()=>{})
-      
-       
-      
+      setTimeout(() => {
+        loadingPage.classList.add("hidden");
+      }, 800);
+
+      // requestGyroPermission().then(()=>{
+      //   scene.gyro_permisson_granted()
+      // },()=>{})
     });
 
-
-    
-    
     window.addEventListener("scroll", () => onScroll(scene), { passive: true });
     window.addEventListener("beforeunload", () => scene.dispose());
   }
@@ -182,18 +217,15 @@ import { HeroScene } from "../scripts/heroScene";
     const DOE = (window as any).DeviceOrientationEvent;
     if (!DOE) return false;
 
-    if (typeof DOE.requestPermission === 'function') {
+    if (typeof DOE.requestPermission === "function") {
       // iOS 13+ path
       try {
         const result = await DOE.requestPermission();
-        if (result !== 'granted') return false;
+        if (result !== "granted") return false;
       } catch {
         return false;
       }
     }
     return true;
   }
-
-  
-
 </script>
