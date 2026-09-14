@@ -15,7 +15,6 @@ export class HeroScene {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   
-  private clock: THREE.Timer;
   private frameId: number = 0;
   private animationMixer: THREE.AnimationMixer | null = null;
   private resizeObserver: ResizeObserver;
@@ -29,11 +28,19 @@ export class HeroScene {
   private onTouchEnd: (e: TouchEvent) => void;
   private onTouchStart: (e: TouchEvent) => void;
 
-  private gyroBaseline: { beta: number; gamma: number } | null = null;
-  private readonly gyroSensitivityY = 4; // degrees of tilt that maps to full parallax range
-  private readonly gyroSensitivityX = 2;
+
   private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
   private touching: boolean = false;
+
+  private deviceQuaternion = new THREE.Quaternion();
+  private baselineQuaternionInverse: THREE.Quaternion | null = null;
+  private readonly deviceEuler = new THREE.Euler();
+  private readonly relativeEuler = new THREE.Euler();
+  private readonly zAxis = new THREE.Vector3(0, 0, 1);
+
+  // -90° rotation around X: camera "looks out the back" of the device, not the top
+  private readonly screenTransform = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
+  private readonly gyroSensitivityDeg = 15; // degrees of relative tilt for full parallax range
 
   constructor(private container: HTMLElement, onProgressCallback: (percent:number|null)=>void, onStartCallback: ()=>void) {
 
@@ -160,10 +167,10 @@ export class HeroScene {
       this.scene.add(imageMesh);
       
 
-      const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+     
 
       this.scene.background = texture;   
-      // this.scene.environment = envMap;
+  
 
       texture.dispose();
       pmremGenerator.dispose();
@@ -275,69 +282,50 @@ export class HeroScene {
 
     this.onTouchEnd = (event: TouchEvent)=>{
       this.touching = false;
-      this.gyroBaseline = null; //reset the baseline
+      this.baselineQuaternionInverse = null;//reset the baseline
     }
     window.addEventListener('mousemove', this.onMouseMove);
     window.addEventListener('touchstart', this.onTouchStart);
     window.addEventListener('touchend', this.onTouchEnd);
 
     this.onDeviceOrientation = (event: DeviceOrientationEvent) => {
-      if (event.beta === null || event.gamma === null) return;
-      if(this.touching) return
-      
-      //Get the baseline if it has not been set or update it if it is being touched
-      if (!this.gyroBaseline) {
-        this.gyroBaseline = { beta: event.beta, gamma: event.gamma };
+      if (event.alpha === null || event.beta === null || event.gamma === null) return;
+      if (this.touching) return;
+
+      const alpha = THREE.MathUtils.degToRad(event.alpha);
+      const beta = THREE.MathUtils.degToRad(event.beta);
+      const gamma = THREE.MathUtils.degToRad(event.gamma);
+      const orient = THREE.MathUtils.degToRad(
+        (screen.orientation && screen.orientation.angle) || 0
+      );
+
+      // Compose into one quaternion instead of treating beta/gamma as
+      // independent numbers — sidesteps the gimbal lock at beta≈±90°.
+      this.deviceEuler.set(beta, alpha, -gamma, 'YXZ');
+      this.deviceQuaternion.setFromEuler(this.deviceEuler);
+      this.deviceQuaternion.multiply(this.screenTransform);　//Set device to be standing up
+      this.deviceQuaternion.multiply(new THREE.Quaternion().setFromAxisAngle(this.zAxis, -orient)); //Apply the oritantion baed on the z-axis
+
+      if (!this.baselineQuaternionInverse) {
+        this.baselineQuaternionInverse = this.deviceQuaternion.clone().invert(); //Get the inverse of the devices quaterion
         return;
       }
 
-      //If the screen is being touched dont use gyro
-      if(this.touching){
-        this.gyroBaseline.beta = event.beta
-        this.gyroBaseline.gamma = event.gamma
-        return;
-      }
+      // Rotation since baseline. Safe to decompose — it's always close to
+      // identity for real hand movement, far from the ±90° singularity.
+      const relative = this.baselineQuaternionInverse.clone().multiply(this.deviceQuaternion); 
+      this.relativeEuler.setFromQuaternion(relative, 'YXZ');
 
-      let deltaBeta = THREE.MathUtils.clamp(this.gyroSensitivityY*(event.beta - this.gyroBaseline.beta)/180,-1,1);   // tilt forward/back
-      let deltaGamma = THREE.MathUtils.clamp(this.gyroSensitivityX*(event.gamma - this.gyroBaseline.gamma)/-90, -1,1); // tilt left/right
+      const x = THREE.MathUtils.clamp(
+        THREE.MathUtils.radToDeg(this.relativeEuler.y) / this.gyroSensitivityDeg, -1, 1
+      );
+      const y = THREE.MathUtils.clamp(
+        THREE.MathUtils.radToDeg(this.relativeEuler.x) / this.gyroSensitivityDeg, -1, 1
+      );
 
-      // beta/gamma swap meaning in landscape — remap based on screen angle
-      let x = 0; 
-      let y = 0;
-      switch(screen.orientation.type){
-        case "landscape-primary":
-          x = -deltaBeta;
-          y = -deltaGamma
-          break;
-        case "landscape-secondary":
-          x = deltaBeta;
-          y = deltaGamma
-          break;
-        case "portrait-secondary": 
-          x= -deltaGamma;
-          y = deltaBeta
-          break;
-        case "portrait-primary":
-          x = deltaGamma;
-          y = -deltaBeta
-          break;
-        default:
-          x = 0
-      }
-
-      //Start from portrait
-      //Rotation around the y axis gives you x movement GAMMA
-      //left is -90, right is 90
-      //Rotation around x is movment in the y BETA
-      //+90 top comes towards me -90 bottom comes towards me
-
-      // const x = deltaGamma/-90
-      // const x = THREE.MathUtils.clamp(deltaGamma / this.gyroSensitivity, -1, 1);
-      // const y = deltaBeta/180
-      // const y = THREE.MathUtils.clamp(deltaBeta / this.gyroSensitivity, -1, 1);
       this.targetMouseNDC.set(x, y);
-    };
-  
+      };
+      
 
   }
 
@@ -381,7 +369,6 @@ export class HeroScene {
   }
 
   gyro_permisson_granted():void{
-    this.gyroBaseline = null; // reset so the next event recalibrates
     window.addEventListener('deviceorientation', this.onDeviceOrientation);
   }
 
