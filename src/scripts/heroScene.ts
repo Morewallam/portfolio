@@ -30,8 +30,8 @@ export class HeroScene {
   private onTouchStart: (e: TouchEvent) => void;
 
   private gyroBaseline: { beta: number; gamma: number } | null = null;
-  private readonly gyroSensitivityY = 30; // degrees of tilt that maps to full parallax range
-  private readonly gyroSensitivityX = 15;
+  private readonly gyroSensitivityY = 5; // degrees of tilt that maps to full parallax range
+  private readonly gyroSensitivityX = 3;
   private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
   private touching: boolean = false;
 
