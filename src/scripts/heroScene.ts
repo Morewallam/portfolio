@@ -297,25 +297,30 @@ export class HeroScene {
         return;
       }
 
-      let deltaBeta = event.beta - this.gyroBaseline.beta;   // tilt forward/back
-      let deltaGamma = event.gamma - this.gyroBaseline.gamma; // tilt left/right
+      let deltaBeta = (event.beta - this.gyroBaseline.beta)/180;   // tilt forward/back
+      let deltaGamma = (event.gamma - this.gyroBaseline.gamma)/-90; // tilt left/right
 
       // beta/gamma swap meaning in landscape — remap based on screen angle
-      // const angle = (screen.orientation?.angle ?? 0) as number;
-      // switch(screen.orientation.type){
-      //   case "landscape-primary":
-      //     console.log("That looks good.");
-      //     break;
-      //   case "landscape-secondary":
-      //     console.log("Mmm… the screen is upside down!");
-      //     break;
-      //   case "portrait-secondary":
-      //   case "portrait-primary":
-      //     console.log("Mmm… you should rotate your device to landscape");
-      //     break;
-      //   default:
-      //     console.log("The orientation API isn't supported in this browser :(");
-      // }
+      let x = 0; 
+      const angle = (screen.orientation?.angle ?? 0) as number;
+      switch(screen.orientation.type){
+        case "landscape-primary":
+          x = -deltaBeta;
+          
+          break;
+        case "landscape-secondary":
+          x = deltaBeta;
+          
+          break;
+        case "portrait-secondary": 
+          x= -deltaGamma;
+          break;
+        case "portrait-primary":
+          x = deltaGamma;
+          break;
+        default:
+          x = 0
+      }
 
       //Start from portrait
       //Rotation around the y axis gives you x movement GAMMA
@@ -323,11 +328,11 @@ export class HeroScene {
       //Rotation around x is movment in the y BETA
       //+90 top comes towards me -90 bottom comes towards me
 
-      const x = deltaGamma/-90
+      // const x = deltaGamma/-90
       // const x = THREE.MathUtils.clamp(deltaGamma / this.gyroSensitivity, -1, 1);
-      const y = deltaBeta/180
+      // const y = deltaBeta/180
       // const y = THREE.MathUtils.clamp(deltaBeta / this.gyroSensitivity, -1, 1);
-      this.targetMouseNDC.set(x, y);
+      this.targetMouseNDC.set(x, 0);
     };
   
 
