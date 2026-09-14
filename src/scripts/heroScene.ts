@@ -124,7 +124,6 @@ export class HeroScene {
 
 
 
-
     //Generate the environment map from the equirectangular texture
     const pmremGenerator = new PMREMGenerator(this.renderer);
     pmremGenerator.compileEquirectangularShader();
@@ -173,7 +172,7 @@ export class HeroScene {
 
     dirLight.target.position.set(0, 0.25, -0.5);
 
-    dirLight.shadow.mapSize.set(1024, 1024); // resolution — trade off vs perf
+    dirLight.shadow.mapSize.set(1024, 1024); 
     dirLight.shadow.camera.near = 0.5;
     dirLight.shadow.camera.far = 30;
     dirLight.shadow.camera.left = -5
@@ -241,10 +240,7 @@ export class HeroScene {
 
     const doorlight = new THREE.PointLight(0xfff2d8, 2, 2, 0.1)
     doorlight.position.set(3,1,-0.5)
-    // doorlight.castShadow = true;
-
-    // doorlight.shadow.mapSize.set(1024, 1024);
-    // doorlight.shadow.bias = -0.0002;
+    
 
     this.scene.add(doorlight)
     
@@ -254,29 +250,6 @@ export class HeroScene {
     // so the hero can be resized independently of the viewport.
     this.resizeObserver = new ResizeObserver(() => this.handleResize());
     this.resizeObserver.observe(container);
-
-    // // 5. Add Core Coordinate Helpers
-    //         // AxesHelper: X = Red, Y = Green, Z = Blue
-    //         const axesHelper = new THREE.AxesHelper(15);
-    //         // Increase thickness of lines slightly by making them render on top
-    //         // axesHelper.material.depthTest = false;
-    //         axesHelper.renderOrder = 1; 
-    //         this.scene.add(axesHelper);
-
-    //         // 6. Add Grid Planes
-    //         // Primary Horizontal Grid (X-Z Plane)
-    //         const gridXZ = new THREE.GridHelper(40, 40, 0x888888, 0x444444);
-    //         this.scene.add(gridXZ);
-
-    //         // Optional Vertical Grid (X-Y Plane) for full 3D reference
-    //         const gridXY = new THREE.GridHelper(40, 40, 0x888888, 0x444444);
-    //         gridXY.rotation.x = Math.PI / 2;
-    //         gridXY.position.y = 0;
-    //         // Lower opacity so it doesn't clutter visual space
-    //         gridXY.material.opacity = 0.25;
-    //         gridXY.material.transparent = true;
-    //         this.scene.add(gridXY);
-
     
 
   }
@@ -309,7 +282,6 @@ export class HeroScene {
 
   startrender():void {
     this.renderer.render(this.scene, this.camera);
-    // this.animationMixer?.setTime(1/24);
     this.animationMixer?.setTime(this.frameId/24)
   }
 
