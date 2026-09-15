@@ -5,7 +5,7 @@ import HMCImage from '../assests/images/HandmadeByClaire.png';
 import planeImage from '../assests/images/planeImage.jpg';
 
 export const about = {
-  intro: "Hi, I'm Sean Wallace",
+  intro: "Hi, I'm  <span class='text-no-wrap'>Sean Wallace</span>",
   passage: "I glad you came to check out my website. I am a software developer that enjoys developing projects, playing games and learning japanese."
 };
 

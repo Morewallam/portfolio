@@ -2,8 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import { PMREMGenerator } from 'three';
-import type { pow2 } from "three/src/nodes/TSL.js";
+
 
 /**
  * Encapsulates the Three.js scene used in the hero section.
@@ -22,12 +21,15 @@ export class HeroScene {
   private baseQuaternion = new THREE.Quaternion();
   private mouseNDC = new THREE.Vector2(0, 0);
   private targetMouseNDC = new THREE.Vector2(0, 0);
+  private previousMouseTarget = this.targetMouseNDC;
   private readonly parallaxMaxYaw = THREE.MathUtils.degToRad(5);   // look left/right
   private readonly parallaxMaxPitch = THREE.MathUtils.degToRad(2.5); // look up/down
   private onMouseMove: (e: MouseEvent) => void;
   private onMouseLeave: (e: MouseEvent) => void;
   private onTouchEnd: (e: TouchEvent) => void;
   private onTouchStart: (e: TouchEvent) => void;
+
+  private needsRender:boolean = true;
 
 
   private onDeviceOrientation: (e: DeviceOrientationEvent) => void;
@@ -61,11 +63,13 @@ export class HeroScene {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
+      powerPreference: 'high-performance'
     });
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
     this.renderer.setSize(container.clientWidth, container.clientHeight);
+    
     container.appendChild(this.renderer.domElement);
   
 
@@ -145,8 +149,6 @@ export class HeroScene {
 
 
     //Generate the environment map from the equirectangular texture
-    const pmremGenerator = new PMREMGenerator(this.renderer);
-    pmremGenerator.compileEquirectangularShader();
 
     const backgroundLoader = new THREE.TextureLoader();
     const texture = backgroundLoader.load('/portfolio/seaBackground.jpg', () => {
@@ -167,15 +169,10 @@ export class HeroScene {
       imageMesh.position.set(-5,1,-0.5)
       imageMesh.lookAt(0,1,-0.5)
       this.scene.add(imageMesh);
-      
-
-     
+    
 
       this.scene.background = texture;   
-  
 
-      texture.dispose();
-      pmremGenerator.dispose();
 
     });
 
@@ -192,7 +189,7 @@ export class HeroScene {
 
     dirLight.target.position.set(0, 0.25, -0.5);
 
-    dirLight.shadow.mapSize.set(1024, 1024); 
+    dirLight.shadow.mapSize.set(512, 512); 
     dirLight.shadow.camera.near = 0.5;
     dirLight.shadow.camera.far = 30;
     dirLight.shadow.camera.left = -5
@@ -201,8 +198,8 @@ export class HeroScene {
     dirLight.shadow.camera.bottom = -5;
     dirLight.shadow.bias = -0.0005; // helps with shadow acne if you see stripes
 
-    
     this.scene.add(dirLight);
+    this.scene.add(dirLight.target)
 
     
 
@@ -213,29 +210,34 @@ export class HeroScene {
     insidedirLight.target.position.set(0, 0.25, -0.5);
 
 
-    insidedirLight.shadow.mapSize.set(1024, 1024); // resolution — trade off vs perf
+    insidedirLight.shadow.mapSize.set(256, 256); // resolution — trade off vs perf
     insidedirLight.shadow.camera.near = 0.1;
     insidedirLight.shadow.camera.far = 20;
     insidedirLight.shadow.camera.left = -1;
     insidedirLight.shadow.camera.right = 1;
     insidedirLight.shadow.camera.top = 1;
     insidedirLight.shadow.camera.bottom = -1;
-    insidedirLight.shadow.bias = -0.0002;
+    insidedirLight.shadow.bias = -0.0005;
+    
     this.scene.add(insidedirLight);
 
     
-
-
     //The light to illumiate the plant section
-    const plantlight = new THREE.PointLight(0xffffff, 2, 5, 1.5);
+    const plantlight = new THREE.PointLight(0xffffff,  2, 3, 1.5);
+    
     plantlight.position.set(-1, 2.25, -2.75);
+    
     plantlight.castShadow = true;
 
-    plantlight.shadow.mapSize.set(1024, 1024); // resolution — trade off vs perf
-    plantlight.shadow.camera.near = 0.1;
+    plantlight.shadow.mapSize.set(512, 512); 
+    plantlight.shadow.camera.near = 0.01;
     plantlight.shadow.camera.far = 6;
-    plantlight.shadow.bias = -0.0005;
+    plantlight.shadow.bias = -0.0002;
+
+   
+
     this.scene.add(plantlight);
+    
     RectAreaLightUniformsLib.init()
    
     //Wall light to give a glow and illumination from the windows
@@ -274,6 +276,7 @@ export class HeroScene {
       const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
       this.targetMouseNDC.set(x,y);
+      this.needsRender = true
     };
     this.onMouseLeave = (event: MouseEvent) => {
       if (!event.relatedTarget) {
@@ -331,22 +334,31 @@ export class HeroScene {
         THREE.MathUtils.radToDeg(this.relativeEuler.x) / this.gyroSensitivityDeg, -1, 1
       );
 
-      this.targetMouseNDC.set(x, y);
+      this.mouseTargetSet(x,y)
       };
       
+  }
 
+  private mouseTargetSet(x:number,y:number):void{
+    this.previousMouseTarget.copy(this.targetMouseNDC)
+    this.targetMouseNDC.set(x,y)
+  }
+
+  private checkChangedTargetDistance():boolean{
+    return this.mouseNDC.distanceToSquared(this.targetMouseNDC) > 1e-8;
   }
 
   private handleResize(): void {
+
     const { clientWidth, clientHeight } = this.container;
     if (clientWidth === 0 || clientHeight === 0) return;
     this.camera.aspect = clientWidth / clientHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(clientWidth, clientHeight);
-    this.startrender()
+    this.needsRender = true;
   }
 
-  private setCameraOffset():void{
+  private setCameraOffset(){
     this.mouseNDC.lerp(this.targetMouseNDC, 0.08);
 
     const yaw = -this.mouseNDC.x * this.parallaxMaxYaw;
@@ -360,20 +372,24 @@ export class HeroScene {
   }
 
   private render = () :void => {
+    const moving = this.checkChangedTargetDistance()
     this.setCameraOffset()
-    this.renderer.render(this.scene, this.camera);
+    if (moving || this.needsRender) {
+      this.renderer.render(this.scene, this.camera);
+      this.needsRender = false;
+    }
   }
 
   public setanimateframe(frameid:number):void {
+    
+   
     this.camera.quaternion.copy(this.baseQuaternion) //Reset the cameras rotation before applying the animation
     this.animationMixer?.setTime(frameid/24);
     
     this.baseQuaternion.copy(this.camera.quaternion); //Set the new fixed rotation from the result of the animation
-
+    this.needsRender = true;
     this.render()
     this.frameId = frameid
-    
-
   }
 
   gyro_permisson_granted():void{
